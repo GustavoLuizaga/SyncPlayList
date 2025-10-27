@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "node --watch --env-file=.env --loader ts-node/esm src/index.ts",
-    "dev:ts": "ts-node --watch src/index.ts",
+    "start:dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "Gustao Luizaga Merino",
+  "author": "Gustavo Luizaga Merino",
   "license": "ISC",
   "description": "",
   "devDependencies": {
