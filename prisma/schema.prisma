@@ -19,3 +19,16 @@ model User {
   
   @@map("user") 
 }
+
+model Music{
+  music_id   String   @id @default(uuid())
+  title      String
+  description String
+  url        String
+  image_url  String
+  duration   Int
+  artist     String
+  addedAt    DateTime @default(now())
+  
+  @@map("music")
+}
