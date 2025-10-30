@@ -17,25 +17,17 @@ build/
 # Environment variables (NUNCA subir!)
 # ==========================================
 .env
-.env.local
-.env.development
-.env.production
-.env.test
-*.env
 
 # ==========================================
 # Prisma
 # ==========================================
-# Cliente generado (se regenera con prisma generate)
+# Cliente generado
 /src/generated/prisma/
 /src/generated/
 
-# Base de datos local (Docker volumes)
+# Base de datos local Docker volumes
 database/
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
+
 
 # ==========================================
 # IDE / Editores
@@ -68,13 +60,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # ==========================================
-# Testing
-# ==========================================
-coverage/
-.nyc_output/
-*.lcov
-
-# ==========================================
 # Temporales
 # ==========================================
 *.tmp
@@ -82,14 +67,3 @@ coverage/
 .cache/
 .parcel-cache/
 
-# ==========================================
-# Docker (opcional, si no quieres subir builds locales)
-# ==========================================
-# docker-compose.override.yml
-
-# ==========================================
-# Backups
-# ==========================================
-*.bak
-*.backup
-*.old
