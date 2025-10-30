@@ -1,0 +1,14 @@
+services:
+  database:
+    image: postgres:17.6
+    env_file: .env
+    container_name: sync_playlist_container
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data

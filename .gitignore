@@ -1,24 +1,95 @@
+# ==========================================
 # Dependencies
+# ==========================================
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
+# ==========================================
 # Build output
+# ==========================================
 dist/
+build/
+*.tsbuildinfo
 
-# Environment variables
+# ==========================================
+# Environment variables (NUNCA subir!)
+# ==========================================
 .env
 .env.local
+.env.development
+.env.production
+.env.test
+*.env
 
-# IDE
+# ==========================================
+# Prisma
+# ==========================================
+# Cliente generado (se regenera con prisma generate)
+/src/generated/prisma/
+/src/generated/
+
+# Base de datos local (Docker volumes)
+database/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# IDE / Editores
+# ==========================================
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
-# OS
+# ==========================================
+# Sistema Operativo
+# ==========================================
 .DS_Store
 Thumbs.db
+desktop.ini
+*.lnk
 
+# ==========================================
 # Logs
+# ==========================================
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# TypeScript
-*.tsbuildinfo
+# ==========================================
+# Testing
+# ==========================================
+coverage/
+.nyc_output/
+*.lcov
+
+# ==========================================
+# Temporales
+# ==========================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+
+# ==========================================
+# Docker (opcional, si no quieres subir builds locales)
+# ==========================================
+# docker-compose.override.yml
+
+# ==========================================
+# Backups
+# ==========================================
+*.bak
+*.backup
+*.old
