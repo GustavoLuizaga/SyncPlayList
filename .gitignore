@@ -17,6 +17,15 @@ build/
 # Environment variables (NUNCA subir!)
 # ==========================================
 .env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Firebase Service Account (Credenciales sensibles)
+**/firebase-service-account.json
+firebase-adminsdk-*.json
 
 # ==========================================
 # Prisma

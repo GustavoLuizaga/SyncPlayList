@@ -1,5 +1,5 @@
 import { IServiceResponse } from "../../types/service.response.interface";
-import { IMusicUpload } from "./IMusicUpload";
+import { IMusicUpload } from "./dto/musicUpload.dto";
 import  IMusic  from "./interface/musc.interface";
 import prisma from "../../config/prisma.client";
 
