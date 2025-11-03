@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { saveMusic } from './music.controller';
+import { saveMusic,getAllMusic } from './music.controller';
 
 const MusicRoutes = Router();
 
@@ -11,10 +11,9 @@ const upload = multer({
     },
 });
 
-MusicRoutes.get('/', (req, res) => {
-    res.send('Music route');
-});
 
-MusicRoutes.post('/upload', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'music', maxCount: 1 }]), saveMusic);
+MusicRoutes.get('/', getAllMusic);
+
+MusicRoutes.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'music', maxCount: 1 }]), saveMusic);
 
 export default MusicRoutes;

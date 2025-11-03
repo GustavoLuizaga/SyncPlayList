@@ -5,6 +5,21 @@ import { uploadFileToStorage } from "../storage/storage.music.services";
 import  IMusic  from "./interface/musc.interface";
 import prisma from "../../config/prisma.client";
 
+export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
+    const musicList =  await prisma.music.findMany();
+    if (!musicList) {
+        return {
+            message: "No music found",
+            ok: false
+        };
+    }
+    return {
+        message: "Music retrieved successfully",
+        ok: true,
+        data: musicList
+    };
+};
+
 
 export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.Multer.File, musicFile: Express.Multer.File): Promise<IServiceResponse<IMusic>> => {
     

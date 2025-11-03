@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { uploadMusic } from "./music.services";
+import { uploadMusic,findAllMusic } from "./music.services";
 
 
 export const saveMusic = async (req: Request, res: Response) => {
@@ -59,6 +59,25 @@ export const saveMusic = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error in saveMusic:', error);
 
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500,
+            ok: false,
+        });
+    }
+};
+
+export const getAllMusic = async (req: Request, res: Response) => {
+    try {
+        const result = await findAllMusic();
+        res.status(200).json({
+            message: result.message,
+            status: 200,
+            ok: true,
+            data: result.data,
+        });
+        
+    } catch (error) {
         res.status(500).json({
             message: 'Internal server error',
             status: 500,
