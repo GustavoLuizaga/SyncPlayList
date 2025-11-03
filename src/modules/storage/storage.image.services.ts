@@ -1,4 +1,3 @@
-import e from 'express';
 import { bucket } from '../../config/firebase.config';
 import IUploadResult from './dto/uploadResult.dto';
 
