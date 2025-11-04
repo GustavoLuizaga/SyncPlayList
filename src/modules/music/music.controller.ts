@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { uploadMusic,findAllMusic } from "./music.services";
+import { uploadMusic,findAllMusic, findByIdMusic, deleteMusicById } from "./music.services";
 
 
 export const saveMusic = async (req: Request, res: Response) => {
@@ -76,7 +76,60 @@ export const getAllMusic = async (req: Request, res: Response) => {
             ok: true,
             data: result.data,
         });
-        
+
+    } catch (error) {
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500,
+            ok: false,
+        });
+    }
+};
+
+export const getMusicById = async (req: Request, res: Response) => {
+    try {
+        const musicId = req.params.id;
+        const result = await findByIdMusic(musicId);
+        if (!result.ok) {
+            return res.status(404).json({
+                message: result.message,
+                status: 404,
+                ok: false,
+            });
+        }
+
+        res.status(200).json({
+            message: result.message,
+            status: 200,
+            ok: true,
+            data: result.data,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500,
+            ok: false,
+        });
+    }
+};
+
+export const removeMusicById = async (req: Request, res: Response) => {
+    try {
+        const musicId = req.params.id;
+        const result = await deleteMusicById(musicId);
+        if (!result.ok) {
+            return res.status(404).json({
+                message: result.message,
+                status: 404,
+                ok: false,
+            });
+        }
+
+        res.status(200).json({
+            message: result.message,
+            status: 200,
+            ok: true,
+        });
     } catch (error) {
         res.status(500).json({
             message: 'Internal server error',
