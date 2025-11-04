@@ -9,15 +9,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Role {
+  role_id   Int      @id @default(autoincrement())
+  role_name String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userRoles UserRole[]
+  
+  @@map("role")
+}
+
 model User {
-  user_id        String   @id @default(uuid())
+  user_id   String   @id @default(uuid())
   email     String   @unique
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  userRoles UserRole[]
+  musicLikes UserLikeMusic[]
+  
   @@map("user") 
+}
+
+model UserRole {
+  user_role_id Int      @id @default(autoincrement())
+  user_id      String
+  role_id      Int      
+  assignedAt   DateTime @default(now())
+  
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  role Role @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  
+  @@unique([user_id, role_id])
+  @@map("user_role")
+}
+
+model Genre{
+  genre_id   Int      @id @default(autoincrement())
+  name       String   @unique
+  createdAt  DateTime @default(now())
+  
+  musicGenres MusicGenre[]
+
+  @@map("genre")
 }
 
 model Music{
@@ -29,6 +66,34 @@ model Music{
   duration   Int
   artist     String
   addedAt    DateTime @default(now())
+
+  musicGenres MusicGenre[]
+  userLikes   UserLikeMusic[]
   
   @@map("music")
 }
+
+model MusicGenre{
+  music_genre_id Int      @id @default(autoincrement())
+  music_id       String
+  genre_id       Int
+  
+  music Music @relation(fields: [music_id], references: [music_id], onDelete: Cascade)
+  genre Genre @relation(fields: [genre_id], references: [genre_id], onDelete: Cascade)
+  
+  @@unique([music_id, genre_id])
+  @@map("music_genre")
+} 
+
+model UserLikeMusic{
+  user_like_music_id Int      @id @default(autoincrement())
+  user_id            String
+  music_id           String
+  likedAt            DateTime @default(now())
+  
+  user  User  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  music Music @relation(fields: [music_id], references: [music_id], onDelete: Cascade)
+  
+  @@unique([user_id, music_id])
+  @@map("user_like_music")
+} 
