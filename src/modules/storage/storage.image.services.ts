@@ -19,6 +19,11 @@ export const uploadImageToStorage = async (file: Express.Multer.File): Promise<I
         url: publicUrl,
     };
 };
-export const deleteImageFromStorage = async (fileName: string): Promise<void> => {
+export const deleteImageFromStorage = async (fileNameOrUrl: string): Promise<void> => {
+    let fileName = fileNameOrUrl;
+    if (fileNameOrUrl.includes('storage.googleapis.com')) {
+        const parts = fileNameOrUrl.split(`${bucket.name}/`);
+        fileName = parts[1] || fileNameOrUrl;
+    }
     await bucket.file(fileName).delete();
 }

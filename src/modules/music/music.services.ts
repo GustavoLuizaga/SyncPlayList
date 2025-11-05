@@ -1,8 +1,7 @@
 import { IServiceResponse } from "../../types/service.response.interface";
 import { IMusicUpload } from "./dto/musicUpload.dto";
-import { uploadImageToStorage } from "../storage/storage.image.services";
-import { uploadFileToStorage } from "../storage/storage.music.services";
-import { getGenresByMusicId } from "./genre.services";
+import { uploadImageToStorage,deleteImageFromStorage } from "../storage/storage.image.services";
+import { uploadFileToStorage,deleteFileFromStorage } from "../storage/storage.music.services";
 import IMusic from "./interface/musc.interface";
 import prisma from "../../config/prisma.client";
 import { mapperToIMusic, mapperToIMusicArray } from "./mapper.interface";
@@ -88,6 +87,9 @@ export const deleteMusicById = async (id: string): Promise<IServiceResponse<void
         await prisma.music.delete({
             where: { music_id: id }
         });
+
+        await deleteImageFromStorage(musicExists.image_url);
+        await deleteFileFromStorage(musicExists.url);
 
         return {
             message: "Music deleted successfully",
