@@ -12,6 +12,7 @@ const ENV = {
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD || '',
     POSTGRES_DB: process.env.POSTGRES_DB || '',
     PGDATA: process.env.PGDATA || '',
+    SALTS: process.env.SALTS || '10',
     
     // Firebase
     FIREBASE_SERVICE_ACCOUNT_PATH: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './src/config/firebase-service-account.json',
