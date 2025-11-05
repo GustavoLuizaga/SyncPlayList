@@ -1,10 +1,10 @@
 import { IServiceResponse } from "../../types/service.response.interface";
-import { IMusicUpload } from "./dtos/musicUpload.dto";
+import { IMusicUpload } from "./dtos/music.upload.dto";
 import { uploadImageToStorage,deleteImageFromStorage } from "../storage/storage.image.services";
 import { uploadFileToStorage,deleteFileFromStorage } from "../storage/storage.music.services";
-import IMusic from "./interface/musc.interface";
+import IMusic from "./interfaces/musc.interface";
 import prisma from "../../config/prisma.client";
-import { mapperToIMusic, mapperToIMusicArray } from "./mapper/mapper.interface";
+import { mapperToIMusic, mapperToIMusicArray } from "./mapper/music.mapper.to.interface";
 
 export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
     try {
