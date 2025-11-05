@@ -7,5 +7,6 @@ interface IMusic {
     duration: number;
     artist: string;
     addedAt: Date;
+    musicGenres: string[];
 }
 export default IMusic;

@@ -32,12 +32,28 @@ export const saveMusic = async (req: Request, res: Response) => {
                 ok: false,
             });
         }
+      
+        let genres: number[] = [];
+        if (req.body.genres) {
+            if (typeof req.body.genres === 'string') {
+                try {
+                    genres = JSON.parse(req.body.genres);
+                } catch {
+                    genres = [parseInt(req.body.genres, 10)];
+                }
+            }
+            else if (Array.isArray(req.body.genres)) {
+                genres = req.body.genres.map((g: string) => parseInt(g, 10));
+            }
+        }
+
         const musicData = {
             title: req.body.title,
             description: req.body.description,
             url: req.body.url,
             duration: parseInt(req.body.duration, 10),
             artist: req.body.artist,
+            genres: genres
         };
 
         const result = await uploadMusic(musicData, musicImage, musicFile);

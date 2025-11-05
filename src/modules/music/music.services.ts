@@ -1,31 +1,60 @@
 import { IServiceResponse } from "../../types/service.response.interface";
 import { IMusicUpload } from "./dto/musicUpload.dto";
-import { uploadImageToStorage} from "../storage/storage.image.services";
-import { uploadFileToStorage } from "../storage/storage.music.services";   
-import  IMusic  from "./interface/musc.interface";
+import { uploadImageToStorage } from "../storage/storage.image.services";
+import { uploadFileToStorage } from "../storage/storage.music.services";
+import { getGenresByMusicId } from "./genre.services";
+import IMusic from "./interface/musc.interface";
 import prisma from "../../config/prisma.client";
+import { mapperToIMusic, mapperToIMusicArray } from "./mapper.interface";
 
 export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
+    try {
+      
+        const musicListResult = await prisma.music.findMany({
+            include: {
+                musicGenres: {
+                    include: {
+                        genre: true
+                    }
+                }
+            }
+        });
 
-    const musicList =  await prisma.music.findMany();
-    if (!musicList) {
+        if (!musicListResult) {
+            return {
+                message: "No music found",
+                ok: true,
+                data: []
+            };
+        }
+        const musicList = mapperToIMusicArray(musicListResult);
+
         return {
-            message: "No music found",
+            message: "Music retrieved successfully",
+            ok: true,
+            data: musicList
+        };
+    } catch (error) {
+        console.error("Error fetching music:", error);
+        return {
+            message: "Error retrieving music",
             ok: false
         };
     }
-    return {
-        message: "Music retrieved successfully",
-        ok: true,
-        data: musicList
-    };
 };
 
 
 export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic>> => {
 
-    const music =  await prisma.music.findUnique({
-        where: { music_id: id }
+    const music = await prisma.music.findUnique({
+        where: { music_id: id },
+        include: {
+            musicGenres: {
+                include: {
+                    genre: true
+                }
+            }
+        }
     });
 
     if (!music) {
@@ -38,7 +67,7 @@ export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic
     return {
         message: "Music retrieved successfully",
         ok: true,
-        data: music
+        data: mapperToIMusic(music)
     };
 };
 
@@ -73,23 +102,40 @@ export const deleteMusicById = async (id: string): Promise<IServiceResponse<void
 };
 
 export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.Multer.File, musicFile: Express.Multer.File): Promise<IServiceResponse<IMusic>> => {
-    
+
     const uploadMusicImageResult = await uploadImageToStorage(musicImage);
 
     const uploadMusicFileResult = await uploadFileToStorage(musicFile);
 
+    const { genres, ...musicDataWithoutGenres } = musicData;
+
     const newMusic = await prisma.music.create({
         data: {
-            ...musicData,
+            ...musicDataWithoutGenres,
             image_url: uploadMusicImageResult.url,
             url: uploadMusicFileResult.url,
-            addedAt: new Date()
+            addedAt: new Date(),
+
+            musicGenres: {
+                create: genres.map(genreId => ({
+                    genre: {
+                        connect: { genre_id: genreId }
+                    }
+                }))
+            }
+        },
+        include: {
+            musicGenres: {
+                include: {
+                    genre: true
+                }
+            }
         }
     });
-    
+
     return {
         message: "Music uploaded successfully",
         ok: true,
-        data: newMusic
+        data: mapperToIMusic(newMusic)
     };
 };
