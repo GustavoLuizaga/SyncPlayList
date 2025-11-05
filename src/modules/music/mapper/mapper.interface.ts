@@ -1,4 +1,4 @@
-import IMusic from "./interface/musc.interface";
+import IMusic from "../interface/musc.interface";
 
 export const mapperToIMusic = (musicData: any): IMusic => {
     return {
