@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
 import { uploadMusic,findAllMusic, findByIdMusic, deleteMusicById, likeMusic, unlikeMusic } from "./music.services";
-import  jwt  from "jsonwebtoken";
-import ENV from "../../config/env.config";
-
 
 
 export const saveMusic = async (req: Request, res: Response) => {
@@ -158,15 +155,12 @@ export const removeMusicById = async (req: Request, res: Response) => {
     }
 };
 
-// music.controller.ts
+
 export const addLike = async (req: Request, res: Response) => {
+
     const { musicId } = req.params;
 
-    const token = req.cookies.token;
-
-    const decodedToken = jwt.verify(token, ENV.JWT_SECRET || 'default_secret') as { user_id: string };
-
-    const userId = decodedToken.user_id;
+    const userId = req.session!.user_id; 
 
     const result = await likeMusic(musicId, userId);
     
@@ -178,9 +172,11 @@ export const addLike = async (req: Request, res: Response) => {
 };
 
 export const removeLike = async (req: Request, res: Response) => {
-    const { musicId } = req.params;
-    const userId = "1111111111111"; // Del middleware de autenticación
     
+    const { musicId } = req.params;
+    
+    const userId = req.session!.user_id; 
+
     const result = await unlikeMusic(musicId, userId);
     
     if (!result.ok) {

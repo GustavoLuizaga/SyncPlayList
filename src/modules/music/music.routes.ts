@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import upload from '../../middleware/multerStorageMiddleware';
 import { saveMusic, getAllMusic, getMusicById, removeMusicById,addLike,removeLike} from './music.controller';
-
+import { verifySessionMiddleware } from '../../middleware/verify.sesion.middleware';
 const MusicRoutes = Router();
+
+MusicRoutes.use(verifySessionMiddleware);
 
 MusicRoutes.get('/', getAllMusic);
 MusicRoutes.get('/:id', getMusicById);

@@ -22,5 +22,9 @@ export function generateAccessToken(payload: IAuthPayload) {
 };
 
 export function decodedToken(token: string) {
-  return jwt.verify(token, ENV.JWT_SECRET ) as { user_id: string };
+  try {
+    return jwt.verify(token, ENV.JWT_SECRET) as IAuthPayload;
+  } catch (error) {
+    return null;
+  }
 };
