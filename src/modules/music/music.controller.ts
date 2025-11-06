@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { uploadMusic,findAllMusic, findByIdMusic, deleteMusicById, likeMusic, unlikeMusic } from "./music.services";
+import { uploadMusic,findAllMusic, findByIdMusic, deleteMusicById, likeMusic, unlikeMusic, musicUserLikesService } from "./music.services";
 
 
 export const saveMusic = async (req: Request, res: Response) => {
@@ -160,7 +160,7 @@ export const addLike = async (req: Request, res: Response) => {
 
     const { musicId } = req.params;
 
-    const userId = req.session!.user_id; 
+    const userId = req.session.user_id; 
 
     const result = await likeMusic(musicId, userId);
     
@@ -183,5 +183,18 @@ export const removeLike = async (req: Request, res: Response) => {
         return res.status(404).json(result);
     }
     
+    return res.status(200).json(result);
+};
+
+export const musicUserLikes = async (req: Request, res: Response) => {
+    
+    const userId = req.session.user_id;
+
+    const result = await musicUserLikesService(userId);
+
+    if (!result.ok) {
+        return res.status(404).json(result);
+    }
+
     return res.status(200).json(result);
 };

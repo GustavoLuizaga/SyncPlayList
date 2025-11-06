@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import upload from '../../middleware/multerStorageMiddleware';
-import { saveMusic, getAllMusic, getMusicById, removeMusicById,addLike,removeLike} from './music.controller';
+import { saveMusic, getAllMusic, getMusicById, removeMusicById,addLike,removeLike, musicUserLikes} from './music.controller';
 import { verifySessionMiddleware } from '../../middleware/verify.sesion.middleware';
 import { userRoleValidation} from '../../middleware/userRole.middleware';
 
@@ -18,6 +18,6 @@ MusicRoutes.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mu
 
 MusicRoutes.post('/:musicId/like', addLike);
 MusicRoutes.delete('/:musicId/like', removeLike);
-
+MusicRoutes.get('/me/likes', musicUserLikes);
 
 export default MusicRoutes;

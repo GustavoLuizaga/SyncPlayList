@@ -1,6 +1,8 @@
 import IMusic from "../interfaces/musc.interface";
+import { countLikesForMusic } from "../music.services";
 
-export const mapperToIMusic = (musicData: any): IMusic => {
+
+export const mapperToIMusic = async (musicData: any): Promise<IMusic> => {
     return {
         music_id: musicData.music_id,
         title: musicData.title,
@@ -10,10 +12,11 @@ export const mapperToIMusic = (musicData: any): IMusic => {
         duration: musicData.duration,
         artist: musicData.artist,
         addedAt: musicData.addedAt,
-        musicGenres: musicData.musicGenres?.map((mg: any) => mg.genre.name) || []
+        musicGenres: musicData.musicGenres?.map((mg: any) => mg.genre.name) || [],
+        quantityLikes: await countLikesForMusic(musicData.music_id) || 0,
     };
 };
 
-export const mapperToIMusicArray = (musicDataArray: any[]): IMusic[] => {
-    return musicDataArray.map(mapperToIMusic);
+export const mapperToIMusicArray = async (musicDataArray: any[]): Promise<IMusic[]> => {
+    return Promise.all(musicDataArray.map(mapperToIMusic));
 };

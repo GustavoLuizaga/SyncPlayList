@@ -1,14 +1,14 @@
 import { IServiceResponse } from "../../types/service.response.interface";
 import { IMusicUpload } from "./dtos/music.upload.dto";
-import { uploadImageToStorage,deleteImageFromStorage } from "../storage/storage.image.services";
-import { uploadFileToStorage,deleteFileFromStorage } from "../storage/storage.music.services";
+import { uploadImageToStorage, deleteImageFromStorage } from "../storage/storage.image.services";
+import { uploadFileToStorage, deleteFileFromStorage } from "../storage/storage.music.services";
 import IMusic from "./interfaces/musc.interface";
 import prisma from "../../config/prisma.client";
 import { mapperToIMusic, mapperToIMusicArray } from "./mapper/music.mapper.to.interface";
 
 export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
     try {
-      
+
         const musicListResult = await prisma.music.findMany({
             include: {
                 musicGenres: {
@@ -26,7 +26,7 @@ export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
                 data: []
             };
         }
-        const musicList = mapperToIMusicArray(musicListResult);
+        const musicList = await mapperToIMusicArray(musicListResult);
 
         return {
             message: "Music retrieved successfully",
@@ -41,7 +41,6 @@ export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
         };
     }
 };
-
 
 export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic>> => {
 
@@ -66,10 +65,9 @@ export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic
     return {
         message: "Music retrieved successfully",
         ok: true,
-        data: mapperToIMusic(music)
+        data: await mapperToIMusic(music)
     };
 };
-
 
 export const deleteMusicById = async (id: string): Promise<IServiceResponse<void>> => {
     try {
@@ -138,17 +136,17 @@ export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.M
     return {
         message: "Music uploaded successfully",
         ok: true,
-        data: mapperToIMusic(newMusic)
+        data: await mapperToIMusic(newMusic)
     };
 };
 
 export const likeMusic = async (musicId: string, userId: string): Promise<IServiceResponse<void>> => {
     try {
-        
+
         const music = await prisma.music.findUnique({
             where: { music_id: musicId }
-        }); 
-        
+        });
+
         if (!music) {
             return {
                 message: "Music not found",
@@ -198,7 +196,7 @@ export const likeMusic = async (musicId: string, userId: string): Promise<IServi
 
 export const unlikeMusic = async (musicId: string, userId: string): Promise<IServiceResponse<void>> => {
     try {
-        
+
         const existingLike = await prisma.userLikeMusic.findUnique({
             where: {
                 user_id_music_id: {
@@ -215,7 +213,7 @@ export const unlikeMusic = async (musicId: string, userId: string): Promise<ISer
             };
         }
 
-    
+
         await prisma.userLikeMusic.delete({
             where: {
                 user_id_music_id: {
@@ -237,3 +235,56 @@ export const unlikeMusic = async (musicId: string, userId: string): Promise<ISer
         };
     }
 };
+
+export const countLikesForMusic = async (musicId: string): Promise<number> => {
+    try {
+        const likeCount = await prisma.userLikeMusic.count({
+            where: { music_id: musicId }
+        });
+        return likeCount;
+    } catch (error) {
+        throw new Error("Error retrieving like count");
+    }
+};
+
+export const musicUserLikesService = async (userId: string): Promise<IServiceResponse<IMusic[]>> => {
+    try {
+        const musicUserLike = await prisma.userLikeMusic.findMany({
+            where: { user_id: userId },
+            include: {
+                music: {
+                    include: {
+                        musicGenres: {
+                            include: {
+                                genre: true
+                            }
+                        }
+                    }
+                }
+            }
+
+        });
+
+        if (musicUserLike?.length === 0) {
+            return {
+                message: "No liked music found",
+                ok: false,
+            };
+        }
+
+        const likedMusicList = await mapperToIMusicArray(musicUserLike.map(like => like.music));
+
+        return {
+            message: "Liked music retrieved successfully",
+            ok: true,
+            data: likedMusicList
+        };
+    } catch (error) {
+        return {
+            message: "Error retrieving liked music",
+            ok: false
+        };
+    }
+};
+
+

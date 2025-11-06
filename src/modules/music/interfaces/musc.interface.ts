@@ -8,5 +8,6 @@ interface IMusic {
     artist: string;
     addedAt: Date;
     musicGenres: string[];
+    quantityLikes? : number;
 }
 export default IMusic;
