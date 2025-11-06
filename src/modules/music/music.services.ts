@@ -15,6 +15,9 @@ export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
                     include: {
                         genre: true
                     }
+                },
+                _count: {
+                    select: { userLikes: true }
                 }
             }
         });
@@ -26,7 +29,7 @@ export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
                 data: []
             };
         }
-        const musicList = await mapperToIMusicArray(musicListResult);
+        const musicList = mapperToIMusicArray(musicListResult);
 
         return {
             message: "Music retrieved successfully",
@@ -51,6 +54,9 @@ export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic
                 include: {
                     genre: true
                 }
+            },
+            _count: {
+                select: { userLikes: true }
             }
         }
     });
@@ -65,7 +71,7 @@ export const findByIdMusic = async (id: string): Promise<IServiceResponse<IMusic
     return {
         message: "Music retrieved successfully",
         ok: true,
-        data: await mapperToIMusic(music)
+        data: mapperToIMusic(music)
     };
 };
 
@@ -129,6 +135,9 @@ export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.M
                 include: {
                     genre: true
                 }
+            },
+            _count: {
+                select: { userLikes: true }
             }
         }
     });
@@ -136,7 +145,7 @@ export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.M
     return {
         message: "Music uploaded successfully",
         ok: true,
-        data: await mapperToIMusic(newMusic)
+        data: mapperToIMusic(newMusic)
     };
 };
 
@@ -258,6 +267,9 @@ export const musicUserLikesService = async (userId: string): Promise<IServiceRes
                             include: {
                                 genre: true
                             }
+                        },
+                        _count: {
+                            select: { userLikes: true }
                         }
                     }
                 }
@@ -272,7 +284,7 @@ export const musicUserLikesService = async (userId: string): Promise<IServiceRes
             };
         }
 
-        const likedMusicList = await mapperToIMusicArray(musicUserLike.map(like => like.music));
+        const likedMusicList = mapperToIMusicArray(musicUserLike.map(like => like.music));
 
         return {
             message: "Liked music retrieved successfully",
