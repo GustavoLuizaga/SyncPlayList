@@ -4,10 +4,10 @@ import { securePass, validatePassHash} from '../../tools/crypto.tool';
 import prisma from '../../config/prisma.client';
 import { IRegisterDto } from './dto/Register.dto';
 import { ILoginDto } from './dto/Login.dto';
-import { ILoginResponse } from './interface/login.response.interface';
+import { IAuthResponse } from './interface/auth.response.interface';
 import { generateAccessToken }  from '../../tools/jwt.tool';
 
-export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResponse<IUser>> => {
+export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResponse<IAuthResponse>> => {
     try {
 
         const existingUser = await prisma.user.findUnique({
@@ -63,18 +63,24 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
             }
         });
 
-        const userWithRoles: IUser = {
+        const token = generateAccessToken({
+            user_id: newUser.user_id,
+            name: newUser.username,
+            email: newUser.email
+        });
+
+        const authResponse: IAuthResponse = {
             user_id: newUser.user_id,
             email: newUser.email,
             username: newUser.username,
-            password: newUser.password,
-            role: newUser.userRoles.map(userRol => userRol.role.role_name)
+            role: newUser.userRoles.map(userRol => userRol.role.role_name),
+            token: token
         };
 
         return {
             ok: true,
             message: "User registered successfully",
-            data: userWithRoles
+            data: authResponse
         };
     } catch (error) {
         return {
@@ -84,7 +90,7 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
     }
 };
 
-export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<ILoginResponse>> => {
+export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IAuthResponse>> => {
     try {
         const user = await prisma.user.findUnique({
             where: { email: payload.email },
@@ -105,7 +111,6 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IL
         }
 
         const isValid = await validatePassHash(payload.password, user.password);
-        const token = generateAccessToken({user_id: user.user_id, name: user.username, email: user.email});
 
         if (!isValid) {
             return {
@@ -113,12 +118,16 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IL
                 message: "Invalid password"
             };
         }
+        const token = generateAccessToken({
+            user_id: user.user_id,
+            name: user.username,
+            email: user.email
+        });
 
-        const loginResponse: ILoginResponse = {
+        const authResponse: IAuthResponse = {
             user_id: user.user_id,
             email: user.email,
             username: user.username,
-            password: user.password,
             role: user.userRoles.map(userRol => userRol.role.role_name),
             token: token
         };
@@ -126,7 +135,7 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IL
         return {
             ok: true,
             message: "User logged in successfully",
-            data: loginResponse
+            data: authResponse
         };
     } catch (error) {
         return {
