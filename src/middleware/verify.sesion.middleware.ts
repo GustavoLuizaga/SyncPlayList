@@ -4,7 +4,7 @@ import { decodedToken, IAuthPayload } from "../../src/tools/jwt.tool";
 declare global {
     namespace Express {
         interface Request {
-            session?: IAuthPayload;
+            session?: any;//Type IAuthPayload
         }
     }
 }
