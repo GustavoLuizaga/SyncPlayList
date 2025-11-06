@@ -11,7 +11,6 @@ export const securePass = async (pws: string): Promise<string | undefined> => {
           console.error('Ha ocurrido un error al generar el hash de la contraseña', err);
           reject(err);
         } else {
-          console.log('hash', hash);
           resolve(hash);
         }
       });
@@ -19,7 +18,6 @@ export const securePass = async (pws: string): Promise<string | undefined> => {
     
     return hash;
   } catch (error) {
-    console.error('Error on secure pass', error);
     return undefined;
   }
 }
@@ -29,7 +27,6 @@ export const validatePassHash = async (plainPass: string, passHash: string): Pro
     const result = await new Promise<boolean>((resolve, reject) => {
       bcrypt.compare(plainPass, passHash, (err, result) => {
         if (err) {
-          console.error('Ha ocurrido un error al validar el hash de la contraseña', err);
           reject(err);
         } else {
           resolve(!!result);
@@ -39,7 +36,6 @@ export const validatePassHash = async (plainPass: string, passHash: string): Pro
     
     return result;
   } catch (error) {
-    console.error("Error al validar el hash", error);
     return false;
   }
 }

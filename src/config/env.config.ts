@@ -14,6 +14,9 @@ const ENV = {
     PGDATA: process.env.PGDATA || '',
     SALTS: process.env.SALTS || '10',
     
+    // JWT
+    JWT_SECRET: process.env.JWT_SECRET || 'your_jwt_secret',
+
     // Firebase
     FIREBASE_SERVICE_ACCOUNT_PATH: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './src/config/firebase-service-account.json',
     FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET || 'prueba-35ced.appspot.com',

@@ -141,3 +141,99 @@ export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.M
         data: mapperToIMusic(newMusic)
     };
 };
+
+export const likeMusic = async (musicId: string, userId: string): Promise<IServiceResponse<void>> => {
+    try {
+        
+        const music = await prisma.music.findUnique({
+            where: { music_id: musicId }
+        }); 
+        
+        if (!music) {
+            return {
+                message: "Music not found",
+                ok: false
+            };
+        }
+
+        const existingLike = await prisma.userLikeMusic.findUnique({
+            where: {
+                user_id_music_id: {
+                    user_id: userId,
+                    music_id: musicId
+                }
+            }
+        });
+
+        if (existingLike) {
+            return {
+                message: "You have already liked this music",
+                ok: false
+            };
+        }
+
+        await prisma.userLikeMusic.create({
+            data: {
+                user: {
+                    connect: { user_id: userId }
+                },
+                music: {
+                    connect: { music_id: musicId }
+                }
+            }
+        });
+
+        return {
+            message: "Like added successfully",
+            ok: true
+        };
+    } catch (error) {
+        console.error("Error adding like:", error);
+        return {
+            message: "Error adding like",
+            ok: false
+        };
+    }
+};
+
+export const unlikeMusic = async (musicId: string, userId: string): Promise<IServiceResponse<void>> => {
+    try {
+        
+        const existingLike = await prisma.userLikeMusic.findUnique({
+            where: {
+                user_id_music_id: {
+                    user_id: userId,
+                    music_id: musicId
+                }
+            }
+        });
+
+        if (!existingLike) {
+            return {
+                message: "Like not found",
+                ok: false
+            };
+        }
+
+    
+        await prisma.userLikeMusic.delete({
+            where: {
+                user_id_music_id: {
+                    user_id: userId,
+                    music_id: musicId
+                }
+            }
+        });
+
+        return {
+            message: "Like removed successfully",
+            ok: true
+        };
+    } catch (error) {
+        console.error("Error removing like:", error);
+        return {
+            message: "Error removing like",
+            ok: false
+        };
+    }
+};
