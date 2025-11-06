@@ -1,15 +1,19 @@
 import prisma from "../src/config/prisma.client";
 import { genreSeeder } from "./seeders/genre.seeder";
 import { roleSeeder } from "./seeders/role.seeder";
+import { userSeeder } from "./seeders/user.seeder";
 
 async function main() {
     try {
-        
-        await genreSeeder();
+
         await roleSeeder();
-        
+       
+        await genreSeeder();
+  
+        await userSeeder();
+    
     } catch (error) {
-        console.error("Error executing seeders:", error);
+       
         throw error;
     }
 }
