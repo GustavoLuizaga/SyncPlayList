@@ -63,10 +63,13 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
             }
         });
 
+        //Auto login after register
+
         const token = generateAccessToken({
             user_id: newUser.user_id,
             name: newUser.username,
-            email: newUser.email
+            email: newUser.email,
+            user_name: newUser.username
         });
 
         const authResponse: IAuthResponse = {
@@ -121,7 +124,8 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IA
         const token = generateAccessToken({
             user_id: user.user_id,
             name: user.username,
-            email: user.email
+            email: user.email,
+            user_name: user.username
         });
 
         const authResponse: IAuthResponse = {

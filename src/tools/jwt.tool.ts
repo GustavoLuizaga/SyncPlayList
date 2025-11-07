@@ -5,6 +5,7 @@ import ENV from '../config/env.config'
 export interface IAuthPayload {
   name: string;
   email: string;
+  user_name: string;
   user_id: string;
 }
 
