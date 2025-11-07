@@ -1,30 +1,40 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
+import http from 'http';;
+import ENV from './env.config';
 
-// Service que usara el socketio
-
-// Cada usuario conectado, se guardara su userId y el socketId
 const userSocketMap = new Map<string, string>();
 
-// Variable global para almacenar la instancia de io
-let ioInstance: SocketIOServer | null = null;
+const serverSocketIO = http.createServer();
 
-export const initSocketIO = (io: SocketIOServer) => {
-    ioInstance = io; // Guardamos la instancia para usarla en otros servicios
+export const io = new SocketIOServer(serverSocketIO, {
+    cors: {
+        origin: '*', // All domains allowed
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true
+    }
+});
 
+export const initSocketIO = () => {
     io.on('connection', (socket: Socket) => {
         console.log(`New client connected: ${socket.id}`);
 
-        // Evento para asociar userId con socketId
         socket.on('register-user', (userId: string) => {
             userSocketMap.set(userId, socket.id);
             console.log(`User ${userId} registered with socket ${socket.id}`);
         });
 
-        // Evento de desconexión (dentro del socket individual)
+        socket.on('test_env_recived', (data) => {
+            console.log('test data', data);
+        });
+
+       
+        socket.on('send_message', (data: any) => {
+            console.log('data any', data);
+        });
+
         socket.on('disconnect', () => {
             console.log(`Client disconnected: ${socket.id}`);
-            
-            // Eliminar el usuario del mapa
+    
             for (const [userId, socketId] of userSocketMap.entries()) {
                 if (socketId === socket.id) {
                     userSocketMap.delete(userId);
@@ -33,24 +43,18 @@ export const initSocketIO = (io: SocketIOServer) => {
                 }
             }
         });
-
-        // Más eventos del socket aquí
     });
-};
 
-// Función para obtener la instancia de io en otros servicios
-export const getIO = (): SocketIOServer => {
-    if (!ioInstance) {
-        throw new Error('Socket.IO no está inicializado. Llama a initSocketIO primero.');
-    }
-    return ioInstance;
+    serverSocketIO.listen(Number(ENV.PORT_SOCKETIO), () => {
+        console.log(`Socket.IO Server running on http://localhost:${ENV.PORT_SOCKETIO}`);
+    });
 };
 
 // Función helper para emitir eventos a un usuario específico
 export const emitToUser = (userId: string, event: string, data: any) => {
     const socketId = userSocketMap.get(userId);
-    if (socketId && ioInstance) {
-        ioInstance.to(socketId).emit(event, data);
+    if (socketId) {
+        io.to(socketId).emit(event, data);
         return true;
     }
     return false;
@@ -58,12 +62,10 @@ export const emitToUser = (userId: string, event: string, data: any) => {
 
 // Función helper para emitir a todos los usuarios
 export const emitToAll = (event: string, data: any) => {
-    if (ioInstance) {
-        ioInstance.emit(event, data);
-        return true;
-    }
-    return false;
+    io.emit(event, data);
+    return true;
 };
+
 
 // Exportar el mapa para poder consultarlo si es necesario
 export const getUserSocketMap = () => userSocketMap;
