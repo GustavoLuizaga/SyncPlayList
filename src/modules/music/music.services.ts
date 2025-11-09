@@ -5,11 +5,46 @@ import { uploadFileToStorage, deleteFileFromStorage } from "../storage/storage.m
 import IMusic from "./interfaces/musc.interface";
 import prisma from "../../config/prisma.client";
 import { mapperToIMusic, mapperToIMusicArray } from "./mapper/music.mapper.to.interface";
+import { IMusicQueryParams } from "./dtos/music.query,params.dto";
 
-export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
+export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<IServiceResponse<IMusic[]>> => {
     try {
 
+        const { title, artist, sortBy, sortOrder } = queryParams;
+
+        // Preparar filtros para la consulta
+        const whereFilters: any = {};
+
+        if (title) {
+            whereFilters.title = {
+                contains: title,
+                mode: 'insensitive'
+            };
+        }
+
+        if (artist) {
+            whereFilters.artist = {
+                contains: artist,
+                mode: 'insensitive'
+            };
+        }
+
+        const orderBy: any = {};
+        if (sortBy) {
+            orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc';
+        } else {
+            orderBy['createdAt'] = 'desc';
+        }
+
+        console.log("Query where filters:", whereFilters, "orderBy:", orderBy);
+
         const musicListResult = await prisma.music.findMany({
+            where: {
+                ...whereFilters
+            },
+            orderBy: {
+                ...orderBy
+            },
             include: {
                 musicGenres: {
                     include: {
@@ -22,11 +57,10 @@ export const findAllMusic = async (): Promise<IServiceResponse<IMusic[]>> => {
             }
         });
 
-        if (!musicListResult) {
+        if (!musicListResult || musicListResult.length === 0) {
             return {
                 message: "No music found",
-                ok: true,
-                data: []
+                ok: false,
             };
         }
         const musicList = mapperToIMusicArray(musicListResult);
@@ -109,44 +143,54 @@ export const deleteMusicById = async (id: string): Promise<IServiceResponse<void
 
 export const uploadMusic = async (musicData: IMusicUpload, musicImage: Express.Multer.File, musicFile: Express.Multer.File): Promise<IServiceResponse<IMusic>> => {
 
-    const uploadMusicImageResult = await uploadImageToStorage(musicImage);
+    try {
 
-    const uploadMusicFileResult = await uploadFileToStorage(musicFile);
+        const uploadMusicImageResult = await uploadImageToStorage(musicImage);
 
-    const { genres, ...musicDataWithoutGenres } = musicData;
+        const uploadMusicFileResult = await uploadFileToStorage(musicFile);
 
-    const newMusic = await prisma.music.create({
-        data: {
-            ...musicDataWithoutGenres,
-            image_url: uploadMusicImageResult.url,
-            url: uploadMusicFileResult.url,
-            addedAt: new Date(),
+        const { genres, ...musicDataWithoutGenres } = musicData;
 
-            musicGenres: {
-                create: genres.map(genreId => ({
-                    genre: {
-                        connect: { genre_id: genreId }
-                    }
-                }))
-            }
-        },
-        include: {
-            musicGenres: {
-                include: {
-                    genre: true
+        const newMusic = await prisma.music.create({
+            data: {
+                ...musicDataWithoutGenres,
+                image_url: uploadMusicImageResult.url,
+                url: uploadMusicFileResult.url,
+                addedAt: new Date(),
+
+                musicGenres: {
+                    create: genres.map(genreId => ({
+                        genre: {
+                            connect: { genre_id: genreId }
+                        }
+                    }))
                 }
             },
-            _count: {
-                select: { userLikes: true }
+            include: {
+                musicGenres: {
+                    include: {
+                        genre: true
+                    }
+                },
+                _count: {
+                    select: { userLikes: true }
+                }
             }
-        }
-    });
+        });
 
-    return {
-        message: "Music uploaded successfully",
-        ok: true,
-        data: mapperToIMusic(newMusic)
-    };
+        return {
+            message: "Music uploaded successfully",
+            ok: true,
+            data: mapperToIMusic(newMusic)
+        };
+
+    } catch (error) {
+        return {
+            message: "Error uploading music",
+            ok: false
+        };
+    }
+
 };
 
 export const likeMusic = async (musicId: string, userId: string): Promise<IServiceResponse<void>> => {

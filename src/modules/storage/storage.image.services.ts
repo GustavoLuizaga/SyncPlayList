@@ -2,6 +2,11 @@ import { bucket } from '../../config/firebase.config';
 import IUploadResult from './dto/uploadResult.dto';
 
 export const uploadImageToStorage = async (file: Express.Multer.File): Promise<IUploadResult> => {
+    
+    if(file.size > 5 * 1024 * 1024){
+        throw new Error('File size exceeds the 5MB limit');
+    }
+    
     const fileName = `images/${Date.now()}_${file.originalname}`;
     const fileUpload = bucket.file(fileName);
 

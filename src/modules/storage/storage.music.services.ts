@@ -2,6 +2,11 @@ import { bucket } from '../../config/firebase.config';
 import IUploadResult from './dto/uploadResult.dto';
 
 export const uploadFileToStorage = async (file: Express.Multer.File): Promise<IUploadResult> => {
+    
+    if(file.size > 15 * 1024 * 1024){
+        throw new Error('File size exceeds the 15MB limit');
+    }
+    
     const fileName = `music/${Date.now()}_${file.originalname}`;
     const fileUpload = bucket.file(fileName);
 
