@@ -1,7 +1,6 @@
 import { IServiceResponse } from "../../types/service.response.interface";
 import { ICreateRoomDto } from "./dtos/create.room.dto";
 import prisma from "../../config/prisma.client";
-import { io } from "../../config/socketio.config";
 import { ISyncRoom } from "./interfaces/sync.room.interface";
 
 
@@ -38,9 +37,9 @@ export const createSyncRoomService = async (payload: ICreateRoomDto, userId: str
     }
 }
 
+//TODO: implementar types
 export const joinSyncRoomService = async (roomId: string, userId: string): Promise<IServiceResponse<any>> => {
     try {
-        // Verificar si la sala existe
         const room = await prisma.syncRoom.findUnique({
             where: { room_id: roomId },
             include: {
@@ -56,7 +55,7 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
 
         if (!room) {
             return {
-                message: "La sala no existe",
+                message: "room not found",
                 ok: false,
                 statusCode: 404
             };
@@ -64,13 +63,12 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
 
         if (!room.is_active) {
             return {
-                message: "La sala no está activa",
+                message: "room is not active",
                 ok: false,
                 statusCode: 400
             };
         }
 
-        // Verificar si el usuario existe
         const user = await prisma.user.findUnique({
             where: { user_id: userId },
             select: {
@@ -82,13 +80,12 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
 
         if (!user) {
             return {
-                message: "Usuario no encontrado",
+                message: "User not found",
                 ok: false,
                 statusCode: 404
             };
         }
 
-        // Verificar si el usuario ya está en la sala
         const existingParticipant = await prisma.syncRoomParticipant.findUnique({
             where: {
                 room_id_user_participant_id: {
@@ -100,7 +97,7 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
 
         if (existingParticipant) {
             return {
-                message: "El usuario ya está en la sala",
+                message: "user already in room",
                 ok: true,
                 data: {
                     roomId: room.room_id,
@@ -112,7 +109,6 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
             };
         }
 
-        // Agregar al usuario como participante
         await prisma.syncRoomParticipant.create({
             data: {
                 room_id: roomId,
@@ -121,7 +117,7 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
         });
 
         return {
-            message: `Usuario ${user.username} unido a la sala ${room.room_name} exitosamente`,
+            message: `User ${user.username} joined room ${room.room_name} successfully`,
             ok: true,
             data: {
                 roomId: room.room_id,
@@ -129,12 +125,12 @@ export const joinSyncRoomService = async (roomId: string, userId: string): Promi
                 host: room.host,
                 user: user,
                 joinedAt: new Date(),
-                message: "Ahora puedes usar Socket.IO para interactuar con la sala. Emite el evento 'join_room' con { roomId, userId }"
+                message: "User joined successfully",
             }
         };
 
     } catch (error) {
-        console.error("Error en joinSyncRoomTestService:", error);
+        console.error("Error in joinSyncRoomService:", error);
         return {
             message: "Error al unirse a la sala",
             ok: false,

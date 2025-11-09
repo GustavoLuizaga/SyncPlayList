@@ -6,7 +6,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
   socket.on("join_room", async ({ roomId, userId }) => {
     try {
       const room = await prisma.syncRoom.findUnique({ 
-        where: { room_id: roomId } 
+        where: { room_id: roomId , is_active: true } 
       });
 
       if (!room) {
@@ -109,6 +109,17 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
       action: "change"
     });
   });
+
+  socket.on("add_music_to_queue", ({ roomId, musicId, seekTime }) => {
+    console.log(`Agregando música ${musicId} a la cola en sala ${roomId}`);
+
+    io.to(roomId).emit("music_added_to_queue", {
+      musicId,
+      seekTime,
+      action: "add"
+    });
+  });
+
 
   //Evento: Enviar mensaje en la sala
   socket.on("send_message", async ({ roomId, userId, message }) => {
