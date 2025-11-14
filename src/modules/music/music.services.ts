@@ -12,7 +12,6 @@ export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<ISer
 
         const { title, artist, sortBy, sortOrder } = queryParams;
 
-        // Preparar filtros para la consulta
         const whereFilters: any = {};
 
         if (title) {

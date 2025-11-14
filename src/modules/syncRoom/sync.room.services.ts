@@ -2,6 +2,8 @@ import { IServiceResponse } from "../../types/service.response.interface";
 import { ICreateRoomDto } from "./dtos/create.room.dto";
 import prisma from "../../config/prisma.client";
 import { ISyncRoom } from "./interfaces/sync.room.interface";
+import { mapSyncRoomsToInterface, mapSyncRoomToInterface } from "./mapper/sync.room.mapper.to.interface";
+
 
 
 export const createSyncRoomService = async (payload: ICreateRoomDto, userId: string): Promise<IServiceResponse<ISyncRoom>> => {
@@ -11,7 +13,7 @@ export const createSyncRoomService = async (payload: ICreateRoomDto, userId: str
             data: {
                 room_name: "Room test",
                 host: {
-                    connect: { user_id: userId } 
+                    connect: { user_id: userId }
                 }
             }
         });
@@ -35,6 +37,64 @@ export const createSyncRoomService = async (payload: ICreateRoomDto, userId: str
             ok: false
         };
     }
+}
+
+export const getSyncRoomByIdService = async (roomId: string): Promise<IServiceResponse<ISyncRoom>> => {
+    try {
+        const room = await prisma.syncRoom.findUnique({
+            where: { room_id: roomId }
+        });
+
+        if (!room) {
+            return {
+                message: "Sync room not found",
+                ok: false
+            };
+        }
+        const mappedRoom: ISyncRoom = mapSyncRoomToInterface(room);
+        
+        return {
+            message: "Sync room retrieved successfully",
+            ok: true,
+            data: mappedRoom
+        };
+    } catch (error) {
+        return {
+            message: "Error retrieving sync room",
+            ok: false
+        };
+    }
+
+}
+
+export const getSyncAllRoomsService = async (): Promise<IServiceResponse<ISyncRoom[]>> => {
+    try {
+
+        const rooms = await prisma.syncRoom.findMany();
+
+        if (!rooms) {
+            return {
+                message: "No rooms found",
+                ok: false
+            };
+        }
+
+        const mappedRooms: ISyncRoom[] = mapSyncRoomsToInterface(rooms);
+
+        return {
+            message: "Rooms retrieved successfully",
+            ok: true,
+            data: mappedRooms
+        };
+
+    } catch (error) {
+        return {
+            message: "Error retrieving rooms",
+            ok: false
+        };
+
+    }
+
 }
 
 //TODO: implementar types

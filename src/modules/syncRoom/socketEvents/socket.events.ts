@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import prisma from "../../../config/prisma.client";
+import IMusic  from "../../music/interfaces/musc.interface";
 
 export const registerSyncRoomEvents = (socket: Socket, io: any) => {
   
@@ -110,14 +111,15 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
     });
   });
 
-  socket.on("add_music_to_queue", ({ roomId, musicId, seekTime }) => {
-    console.log(`Agregando música ${musicId} a la cola en sala ${roomId}`);
+  socket.on("add_music_to_queue", (music:IMusic, roomId: string) => {
+    console.log(`Agregando música ${music.music_id} a la cola en sala ${roomId}`);
 
     io.to(roomId).emit("music_added_to_queue", {
-      musicId,
-      seekTime,
+      ...music,
       action: "add"
     });
+
+    
   });
 
 
