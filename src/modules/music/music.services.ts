@@ -32,7 +32,7 @@ export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<ISer
         if (sortBy) {
             orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc';
         } else {
-            orderBy['createdAt'] = 'desc';
+            orderBy['addedAt'] = 'desc';
         }
 
         console.log("Query where filters:", whereFilters, "orderBy:", orderBy);

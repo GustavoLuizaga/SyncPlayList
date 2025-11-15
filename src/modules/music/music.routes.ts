@@ -9,6 +9,7 @@ const MusicRoutes = Router();
 MusicRoutes.use(verifySessionMiddleware);
 
 MusicRoutes.get('/', getAllMusic);
+MusicRoutes.get('/me/likes', musicUserLikes);
 MusicRoutes.get('/:id', getMusicById);
 
 
@@ -18,6 +19,5 @@ MusicRoutes.post('/', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mu
 
 MusicRoutes.post('/:musicId/like', addLike);
 MusicRoutes.delete('/:musicId/like', removeLike);
-MusicRoutes.get('/me/likes', musicUserLikes);
 
 export default MusicRoutes;

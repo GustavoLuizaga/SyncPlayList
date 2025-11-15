@@ -5,19 +5,17 @@ import { createPlaylist, deletePlaylist, getPlaylistsByRoom,getMusicByPlaylist,a
 
 const PlaylistRouter = Router();
 
-PlaylistRouter.post('/:roomId', createPlaylist)
 
-PlaylistRouter.post('/:roomId', getPlaylistsByRoom)
-
-PlaylistRouter.get('/:playlistId', getPlaylistById) 
-
-PlaylistRouter.delete('/:playlistId', deletePlaylist) 
+PlaylistRouter.post('/room/:roomId', createPlaylist);
+PlaylistRouter.get('/room/:roomId', getPlaylistsByRoom);
 
 
-PlaylistRouter.post('/:playlistId/:musicId', addMusicToPlaylist) 
+PlaylistRouter.get('/:playlistId/music', getMusicByPlaylist);
+PlaylistRouter.get('/:playlistId', getPlaylistById);
+PlaylistRouter.delete('/:playlistId', deletePlaylist);
 
-PlaylistRouter.delete('/:playlistId/:musicId',removeMusicFromPlaylist) 
 
-PlaylistRouter.get('/:playlistId/music', getMusicByPlaylist) 
+PlaylistRouter.post('/:playlistId/music/:musicId', addMusicToPlaylist);
+PlaylistRouter.delete('/:playlistId/music/:musicId', removeMusicFromPlaylist);
 
 export default PlaylistRouter;

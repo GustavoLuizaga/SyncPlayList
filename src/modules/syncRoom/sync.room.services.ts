@@ -6,12 +6,41 @@ import { mapSyncRoomsToInterface, mapSyncRoomToInterface } from "./mapper/sync.r
 
 
 
+
+export const getSyncRoomByUserIdService = async (userId: string): Promise<IServiceResponse<ISyncRoom[]>> => {
+    try {
+        const rooms = await prisma.syncRoom.findMany({
+            where: { user_host_id: userId }
+        });
+        if (!rooms) {
+            return {
+                message: "No rooms found for user",
+                ok: false
+            };
+        }
+
+        const mappedRooms: ISyncRoom[] = mapSyncRoomsToInterface(rooms);
+
+        return {
+            message: "Rooms retrieved successfully",
+            ok: true,
+            data: mappedRooms
+        };
+
+    } catch (error) {
+        return {
+            message: "Error retrieving rooms for user",
+            ok: false
+        };
+    }
+}
+
 export const createSyncRoomService = async (payload: ICreateRoomDto, userId: string): Promise<IServiceResponse<ISyncRoom>> => {
 
     try {
         const newRoom = await prisma.syncRoom.create({
             data: {
-                room_name: "Room test",
+                room_name: payload.room_name,
                 host: {
                     connect: { user_id: userId }
                 }
@@ -34,6 +63,35 @@ export const createSyncRoomService = async (payload: ICreateRoomDto, userId: str
     } catch (error) {
         return {
             message: "Error creating sync room",
+            ok: false
+        };
+    }
+}
+
+export const deleteSyncRoomService = async (roomId: string, userId: string): Promise<IServiceResponse<void>> => {
+    try {
+        const room = await prisma.syncRoom.findUnique({
+            where: { room_id: roomId , user_host_id: userId }
+        });
+        if(!room) {
+            return {
+                message: "Sync room not found or you are not the host",
+                ok: false
+            };
+        }
+
+        await prisma.syncRoom.delete({
+            where: { room_id: roomId }
+        });
+
+        return {
+            message: "Sync room deleted successfully",
+            ok: true
+        };
+
+    } catch (error) {
+        return {
+            message: "Error deleting sync room",
             ok: false
         };
     }

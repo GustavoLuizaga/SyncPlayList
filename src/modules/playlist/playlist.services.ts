@@ -82,17 +82,6 @@ export const getPlaylistsByRoomService = async (roomId: string): Promise<IServic
 
 export const getPlaylistByIdService = async (playlistId: string): Promise<IServiceResponse<IPlaylist>> => {
     try {
-        const playListExist = await prisma.playlist.findUnique({
-            where: { playlist_id: playlistId }
-        });
-
-        if(!playListExist){
-            return {
-                message: "Playlist not found",
-                ok: false
-            };
-        }
-
         const playlist = await prisma.playlist.findUnique({
             where: { playlist_id: playlistId },
             include: {
@@ -115,25 +104,33 @@ export const getPlaylistByIdService = async (playlistId: string): Promise<IServi
             }
         });
 
-        const playlistResponser: IPlaylist = {
-            playlist_id: playlist!.playlist_id,
-            createdAt: playlist!.createdAt,
-            musicList: mapperToIMusicArray(playlist!.playlistMusics)
+        if (!playlist) {
+            return {
+                message: "Playlist not found",
+                ok: false
+            };
+        }
+        const musicData = playlist.playlistMusics.map(pm => pm.music);
+        const musicList = mapperToIMusicArray(musicData);
+
+        const playlistResponse: IPlaylist = {
+            playlist_id: playlist.playlist_id,
+            createdAt: playlist.createdAt,
+            musicList: musicList
         };
 
-        return{
+        return {
             message: "Playlist retrieved successfully",
             ok: true,
-            data: playlistResponser
+            data: playlistResponse
         }
-    }catch (error) {
+    } catch (error) {
+        console.error("Error retrieving playlist:", error);
         return {
             message: "Error retrieving playlist",
             ok: false
         };
     }
-
-
 }
 
 
@@ -165,8 +162,10 @@ export const getMusicByPlaylistService = async (playlistId: string): Promise<ISe
                 data: []
             };
         }
+        
+        const musicData = musicsPlaylist.map(pm => pm.music);
 
-        const musicList = mapperToIMusicArray(musicsPlaylist);
+        const musicList = mapperToIMusicArray(musicData);
 
         return {
             message: "Musics retrieved successfully",
@@ -184,18 +183,63 @@ export const getMusicByPlaylistService = async (playlistId: string): Promise<ISe
 
 export const addMusicToPlaylistService = async (playlistId: string, musicId: string): Promise<IServiceResponse<void>> => {
     try{
+
+        const playlistExists = await prisma.playlist.findUnique({
+            where: {
+                playlist_id: playlistId
+            }
+        });
+
+        if (!playlistExists) {
+            return {
+                message: "Playlist not found",
+                ok: false
+            };
+        }
+
+        const musicExists = await prisma.music.findUnique({
+            where: {
+                music_id: musicId
+            }
+        });
+
+        if (!musicExists) {
+            return {
+                message: "Music not found",
+                ok: false
+            };
+        }
+
+        const existingEntry = await prisma.playlistMusic.findUnique({
+            where: {
+                playlist_id_music_id: {
+                    playlist_id: playlistId,
+                    music_id: musicId
+                }
+            }
+        });
+
+        if (existingEntry) {
+            return {
+                message: "Music already exists in this playlist",
+                ok: false
+            };
+        }
+
+
         await prisma.playlistMusic.create({
             data: {
                 playlist_id: playlistId,
                 music_id: musicId
             }
-        })
+        });
 
         return{
             message: "Music added to playlist successfully",
             ok: true
         }
     }catch(error){
+        console.error("Error adding music to playlist:", error);
         return {
             message: "Error adding music to playlist",
             ok: false
@@ -205,6 +249,33 @@ export const addMusicToPlaylistService = async (playlistId: string, musicId: str
 };
 export const removeMusicFromPlaylistService = async (playlistId: string, musicId: string): Promise<IServiceResponse<void>> => {
     try {
+        const playlistExists = await prisma.playlist.findUnique({
+            where: {
+                playlist_id: playlistId
+            }
+        });
+
+        if (!playlistExists) {
+            return {
+                message: "Playlist not found",
+                ok: false
+            };
+        }
+
+        
+        const musicExists = await prisma.music.findUnique({
+            where: {
+                music_id: musicId
+            }
+        });
+
+        if (!musicExists) {
+            return {
+                message: "Music not found",
+                ok: false
+            };
+        }
+
         const playlistMusic = await prisma.playlistMusic.findUnique({
             where: {
                 playlist_id_music_id: {
@@ -216,11 +287,12 @@ export const removeMusicFromPlaylistService = async (playlistId: string, musicId
 
         if (!playlistMusic) {
             return {
-                message: "Music not found in playlist",
+                message: "Music not found in this playlist",
                 ok: false
             };
         }
 
+   
         await prisma.playlistMusic.delete({
             where: {
                 playlist_id_music_id: {
@@ -235,6 +307,7 @@ export const removeMusicFromPlaylistService = async (playlistId: string, musicId
             ok: true
         };
     } catch (error) {
+        console.error("Error removing music from playlist:", error);
         return {
             message: "Error removing music from playlist",
             ok: false
