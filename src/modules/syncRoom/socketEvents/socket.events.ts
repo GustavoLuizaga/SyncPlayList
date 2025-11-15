@@ -15,7 +15,6 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
         return;
       }
 
-      // Usuario obtiene información adicional
       const user = await prisma.user.findUnique({
         where: { user_id: userId },
         select: {
@@ -30,7 +29,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
       console.log(`Usuario ${user?.username} (${userId}) se unió a la sala ${room.room_name} (${roomId})`);
       console.log(`Socket ${socket.id} ahora está en la sala ${roomId}`);
 
-      // Notificar a todos en la sala (excepto al que se unió)
+      // Notificar a todos en la sala (excepto al usuario que se unió)
       socket.to(roomId).emit("user_joined", { 
         userId,
         username: user?.username,
@@ -81,7 +80,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
   socket.on("play_music", ({ roomId, musicId, musicData }) => {
     console.log(`Reproduciendo música ${musicId} en sala ${roomId}`);
     
-    // TODOS en la sala (incluido quien emitió) escuchan esto
+    // TODOS en la sala (incluido quien emitió) esscuchan la música
     io.to(roomId).emit("music_playing", {
       musicId,
       musicData,
@@ -89,7 +88,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
     });
   });
 
-  //Evento: Pausar música
+  //Pausar música
   socket.on("pause_music", ({ roomId, musicId, currentTime }) => {
     console.log(`⏸Pausando música ${musicId} en sala ${roomId}`);
     
@@ -100,7 +99,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
     });
   });
 
-  // Evento: Cambiar música
+  //Cambiar música
   socket.on("change_music", ({ roomId, newMusicId, musicData }) => {
     console.log(`Cambiando a música ${newMusicId} en sala ${roomId}`);
     
@@ -123,7 +122,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
   });
 
 
-  //Evento: Enviar mensaje en la sala
+  //Enviar mensaje en la sala
   socket.on("send_message", async ({ roomId, userId, message }) => {
     try {
       const user = await prisma.user.findUnique({
@@ -136,7 +135,7 @@ export const registerSyncRoomEvents = (socket: Socket, io: any) => {
 
       console.log(`${user?.username} envió mensaje en sala ${roomId}`);
 
-      // TODOS en la sala (incluido el emisor) ven el mensaje
+      // TODOS en la sala (incluido el emisor) verá  el mensaje
       io.to(roomId).emit("new_message", {
         userId,
         username: user?.username,

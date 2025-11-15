@@ -59,7 +59,7 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
 
 1. **Clona el repositorio:**
    ```bash
-   git clone [text](https://github.com/GustavoLuizaga/SyncPlayList.git)
+   git clone `https://github.com/GustavoLuizaga/SyncPlayList.git`
    cd SyncPlayList
    ```
 
@@ -83,7 +83,7 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
 
 5. **Ejecuta las migraciones de Prisma:**
    ```bash
-   npx prisma migrate dev
+   npm run prisma:migrate
    ```
 
 6. **Ejecuta los seeders:**
@@ -104,13 +104,13 @@ Para que el proyecto funcione correctamente, debes generar el cliente de Prisma 
 
 1. **Generar el cliente Prisma:**
    ```bash
-   npx prisma generate
+   npm run prisma:generate
    ```
    Esto creará el cliente en la carpeta `src/generated/prisma`.
 
 2. **Ejecutar migraciones:**
    ```bash
-   npx prisma migrate dev
+   npm run prisma:migrate
    ```
    Esto aplicará las migraciones y mantendrá tu base de datos actualizada.
 
@@ -134,3 +134,20 @@ Para facilitar las pruebas de la API, puedes descargar la colección de Postman 
 [Descargar colección de Postman](https://drive.google.com/file/d/10YHCs3H2Urog6kpbQoCAd_6TM808MXjr/view?usp=sharing)
 
 Importa el archivo en Postman y configura las variables de entorno según tu `.env`.
+
+## 🔔 Eventos de Socket.io en Sync Rooms
+
+A continuación se detallan los eventos principales que implementé para la sincronización en tiempo real dentro de las salas colaborativas (Sync Rooms):
+
+- **join_room**: Permite a un usuario unirse a una sala. Si la sala existe y está activa, el usuario se une y se notifica a todos los participantes. El usuario recibe confirmación de ingreso.
+- **leave_room**: Permite a un usuario salir de una sala. Se notifica a todos los participantes que el usuario ha salido.
+- **play_music**: Cuando alguien reproduce una canción, todos los usuarios de la sala escuchan la misma música al mismo tiempo. Se envía el evento `music_playing` con los datos de la canción.
+- **pause_music**: Permite pausar la música para todos los usuarios de la sala. Se envía el evento `music_paused` con el tiempo actual de la canción.
+- **change_music**: Permite cambiar la canción que se está reproduciendo en la sala. Todos los usuarios reciben el evento `music_changed` con los datos de la nueva canción.
+- **add_music_to_queue**: Permite agregar una canción a la cola de reproducción de la sala. Todos los usuarios reciben el evento `music_added_to_queue` con los datos de la canción agregada.
+- **send_message**: Permite enviar mensajes dentro de la sala. Todos los usuarios reciben el evento `new_message` con el mensaje, el usuario y la hora.
+
+Estos eventos permiten que la experiencia de escuchar música en grupo sea realmente colaborativa y sincronizada.
+
+---
+
