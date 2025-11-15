@@ -23,6 +23,22 @@ SyncPlayList es una plataforma web de reproducción musical colaborativa en tiem
 - Socket.io (sincronización en tiempo real)
 - JWT y cookies para autenticación
 
+## 🔑 Configuración de Firebase
+
+Para que la integración con Firebase funcione, necesitas el archivo de credenciales `firebase-service-account.json`.
+
+Descárgalo desde el siguiente enlace:
+
+[Descargar credenciales de Firebase](https://drive.google.com/file/d/1bwY8Yttej45sWGbqKw4kcP8kPX7oZEdq/view?usp=sharing)
+
+Coloca el archivo en la siguiente ruta dentro del proyecto:
+
+```
+/src/config/firebase-service-account.json
+```
+
+Asegúrate de que la variable `FIREBASE_SERVICE_ACCOUNT_PATH` en tu `.env` apunte a esa ruta.
+
 ## ⚡ Instalación y ejecución
 
 1. **Clona el repositorio:**
@@ -84,5 +100,3 @@ SyncPlayList es una plataforma web de reproducción musical colaborativa en tiem
 - El proyecto está pensado para usarse junto a un frontend web (no incluido aquí).
 - Requiere tener Docker instalado para la base de datos.
 - Puedes personalizar los seeders en la carpeta `prisma/seeders` para cargar datos iniciales.
-
----
