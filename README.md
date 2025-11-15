@@ -59,7 +59,7 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
 
 1. **Clona el repositorio:**
    ```bash
-   git clone `https://github.com/GustavoLuizaga/SyncPlayList.git`
+   git clone https://github.com/GustavoLuizaga/SyncPlayList.git
    cd SyncPlayList
    ```
 
@@ -69,7 +69,7 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
    ```
 
 3. **Configura las variables de entorno:**
-   - Crea un archivo `.env` en la raíz con la configuración de tu base de datos,JWT y firebase config.
+   - Crea un archivo `.env` en la raíz con la configuración de tu base de datos, JWT y firebase config.
    - Ejemplo:
      ```
      DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/syncplaylist
@@ -81,22 +81,29 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
    docker compose up --detach
    ```
 
-5. **Ejecuta las migraciones de Prisma:**
+5. **Genera el cliente Prisma:**
+   ```bash
+   npm run prisma:generate
+   ```
+   Esto creará el cliente en la carpeta `src/generated/prisma`.
+
+6. **Ejecuta las migraciones de Prisma:**
    ```bash
    npm run prisma:migrate
    ```
+   Esto aplicará las migraciones y mantendrá tu base de datos actualizada.
 
-6. **Ejecuta los seeders:**
+7. **Ejecuta los seeders:**
    ```bash
    npm run prisma:seed
    ```
 
-6. **Inicia el servidor:**
+8. **Inicia el servidor:**
    ```bash
    npm run dev
    ```
    El servidor REST API estará corriendo en `http://localhost:3000`.
-   El servidor SocketIo estará en `http://localhost:3001`
+   El servidor SocketIo estará en `http://localhost:3001`.
 
 ## 🚀 Prisma Client y archivos generados
 
