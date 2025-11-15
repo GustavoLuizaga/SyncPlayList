@@ -27,7 +27,7 @@ SyncPlayList es una plataforma web de reproducción musical colaborativa en tiem
 
 1. **Clona el repositorio:**
    ```bash
-   git clone https://github.com/GustavoLuizaga/SyncPlayList.git
+   git clone 
    cd SyncPlayList
    ```
 
