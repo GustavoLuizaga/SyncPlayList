@@ -100,7 +100,7 @@ Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
 
 8. **Inicia el servidor:**
    ```bash
-   npm run dev
+   npm run start:dev
    ```
    El servidor REST API estará corriendo en `http://localhost:3000`.
    El servidor SocketIo estará en `http://localhost:3001`.
