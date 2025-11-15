@@ -29,7 +29,7 @@ Para que la integración con Firebase funcione, necesitas el archivo de credenci
 
 Descárgalo desde el siguiente enlace:
 
-[Descargar credenciales de Firebase](https://drive.google.com/file/d/1bwY8Yttej45sWGbqKw4kcP8kPX7oZEdq/view?usp=sharing)
+[Descargar credenciales de Firebase](https://drive.google.com/file/d/1jeTttR-YPGxbZs3RP7ccZbUcUv88qfT-/view?usp=sharing)
 
 Coloca el archivo en la siguiente ruta dentro del proyecto:
 
