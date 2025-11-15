@@ -149,5 +149,11 @@ A continuación se detallan los eventos principales que implementé para la sinc
 
 Estos eventos permiten que la experiencia de escuchar música en grupo sea realmente colaborativa y sincronizada.
 
+## 🎬 Demo en video
+
+Puedes ver una demostración del funcionamiento de SyncPlayList en el siguiente video:
+
+[Ver demo en video](https://drive.google.com/file/d/1cdWCIHX3oBUCwo7WqGJtZfur4qxlVpCe/view?usp=sharing)
+
 ---
 

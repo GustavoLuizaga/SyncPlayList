@@ -17,6 +17,22 @@ export const saveMusic = async (req: Request, res: Response) => {
         const musicImage = files['image']?.[0];
         const musicFile = files['music']?.[0];
 
+        if (!musicImage) {
+            return res.status(400).json({
+                message: 'La imagen de la música es requerida',
+                status: 400,
+                ok: false,
+            });
+        }
+
+        if (!musicFile) {
+            return res.status(400).json({
+                message: 'El archivo de música es requerido',
+                status: 400,
+                ok: false,
+            });
+        }
+
         if (musicFile.size > 15 * 1024 * 1024) { // 15MB limit
             return res.status(400).json({
                 message: 'Music file must be less than 15MB',
@@ -33,22 +49,6 @@ export const saveMusic = async (req: Request, res: Response) => {
             });
         }
 
-        if (!musicImage) {
-            return res.status(400).json({
-                message: 'La imagen de la música es requerida',
-                status: 400,
-                ok: false,
-            });
-        }
-
-        if (!musicFile) {
-            return res.status(400).json({
-                message: 'El archivo de música es requerido',
-                status: 400,
-                ok: false,
-            });
-        }
-      
         let genres: number[] = [];
         if (req.body.genres) {
             if (typeof req.body.genres === 'string') {
