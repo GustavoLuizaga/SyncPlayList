@@ -1,0 +1,153 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  role_id   Int      @id @default(autoincrement())
+  role_name String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userRoles UserRole[]
+  
+  @@map("role")
+}
+
+model User {
+  user_id   String   @id @default(uuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userRoles             UserRole[]
+  musicLikes            UserLikeMusic[]
+  hostedSyncRooms       SyncRoom[]             @relation("HostedRooms")
+  participatedSyncRooms SyncRoomParticipant[]  @relation("ParticipantRooms")
+  
+  @@map("user") 
+}
+
+model UserRole {
+  user_role_id Int      @id @default(autoincrement())
+  user_id      String
+  role_id      Int      
+  assignedAt   DateTime @default(now())
+  
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  role Role @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  
+  @@unique([user_id, role_id])
+  @@map("user_role")
+}
+
+model Genre{
+  genre_id   Int      @id @default(autoincrement())
+  name       String   @unique
+  createdAt  DateTime @default(now())
+  
+  musicGenres MusicGenre[]
+
+  @@map("genre")
+}
+
+model Music{
+  music_id    String   @id @default(uuid())
+  title       String
+  description String
+  url         String
+  image_url   String
+  duration    Int
+  artist      String
+  addedAt     DateTime @default(now())
+
+  musicGenres    MusicGenre[]
+  userLikes      UserLikeMusic[]
+  playlistMusics PlaylistMusic[]
+  
+  @@map("music")
+}
+
+model MusicGenre{
+  music_genre_id Int      @id @default(autoincrement())
+  music_id       String
+  genre_id       Int
+  
+  music Music @relation(fields: [music_id], references: [music_id], onDelete: Cascade)
+  genre Genre @relation(fields: [genre_id], references: [genre_id], onDelete: Cascade)
+  
+  @@unique([music_id, genre_id])
+  @@map("music_genre")
+} 
+
+model UserLikeMusic{
+  user_like_music_id Int      @id @default(autoincrement())
+  user_id            String
+  music_id           String
+  likedAt            DateTime @default(now())
+  
+  user  User  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  music Music @relation(fields: [music_id], references: [music_id], onDelete: Cascade)
+  
+  @@unique([user_id, music_id])
+  @@map("user_like_music")
+} 
+
+model SyncRoom{
+  room_id      String   @id @default(uuid())
+  room_name    String   
+  user_host_id String
+  createdAt    DateTime @default(now())
+  is_active    Boolean  @default(true)
+
+  host               User                  @relation("HostedRooms", fields: [user_host_id], references: [user_id], onDelete: Cascade)
+  participantsOfRoom SyncRoomParticipant[]
+  playlists          Playlist[]
+
+  @@map("sync_room")
+}
+
+model SyncRoomParticipant{
+  sync_room_participant_id Int      @id @default(autoincrement())
+  room_id                  String
+  user_participant_id      String
+  joinedAt                 DateTime @default(now())
+  
+  syncRoom SyncRoom @relation(fields: [room_id], references: [room_id], onDelete: Cascade)
+  user     User     @relation("ParticipantRooms", fields: [user_participant_id], references: [user_id], onDelete: Cascade)
+
+  @@unique([room_id, user_participant_id])
+  @@map("sync_room_participant")
+}
+
+model Playlist{
+  playlist_id String   @id @default(uuid())
+  room_id     String
+  createdAt   DateTime @default(now())
+
+  syncRoom       SyncRoom        @relation(fields: [room_id], references: [room_id], onDelete: Cascade)
+  playlistMusics PlaylistMusic[]
+
+  @@map("playlist")
+}
+
+model PlaylistMusic{
+  playlist_item_id Int      @id @default(autoincrement())
+  playlist_id      String
+  music_id         String
+  addedAt          DateTime @default(now())
+  
+  playlist Playlist @relation(fields: [playlist_id], references: [playlist_id], onDelete: Cascade)
+  music    Music    @relation(fields: [music_id], references: [music_id], onDelete: Cascade)
+
+  @@unique([playlist_id, music_id])
+  @@map("playlist_music")
+}

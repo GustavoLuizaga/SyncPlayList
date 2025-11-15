@@ -1,24 +1,78 @@
+# ==========================================
 # Dependencies
+# ==========================================
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
+# ==========================================
 # Build output
+# ==========================================
 dist/
+build/
+*.tsbuildinfo
 
-# Environment variables
+# ==========================================
+# Environment variables (NUNCA subir!)
+# ==========================================
 .env
 .env.local
+.env.development
+.env.production
+.env.test
+*.env
 
-# IDE
+# Firebase Service Account (Credenciales sensibles)
+**/firebase-service-account.json
+firebase-adminsdk-*.json
+
+# ==========================================
+# Prisma
+# ==========================================
+# Cliente generado
+/src/generated/prisma/
+/src/generated/
+
+# Base de datos local Docker volumes
+database/
+
+
+# ==========================================
+# IDE / Editores
+# ==========================================
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
-# OS
+# ==========================================
+# Sistema Operativo
+# ==========================================
 .DS_Store
 Thumbs.db
+desktop.ini
+*.lnk
 
+# ==========================================
 # Logs
+# ==========================================
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# TypeScript
-*.tsbuildinfo
+# ==========================================
+# Temporales
+# ==========================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+

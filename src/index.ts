@@ -1,17 +1,20 @@
-import express, { Request, Response } from 'express';
+import Server from './config/server.config'
+import ENV from './config/env.config';
+import { initSocketIO } from './config/socketio.config';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+async function start() {
+    try {
+        
+        initSocketIO();
 
-// Middleware para parsear JSON
-app.use(express.json());
+        // Servidor Express (escucha en puerto 3000)
+        Server.listen(ENV.PORT, () => {
+            console.log(`REST API Server running on http://localhost:${ENV.PORT}`);
+        });
 
-// Ruta de ejemplo
-app.get('/', (_req: Request, res: Response) => {
-  res.json({ message: 'Hello from TypeScript!' });
-});
+    } catch (error) {
+        console.error('Error starting the server:', error);
+    }
+}
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+start();
