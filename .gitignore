@@ -24,8 +24,8 @@ build/
 *.env
 
 # Firebase Service Account (Credenciales sensibles)
-**/firebase-service-account.json
-firebase-adminsdk-*.json
+#**/firebase-service-account.json
+#firebase-adminsdk-*.json
 
 # ==========================================
 # Prisma

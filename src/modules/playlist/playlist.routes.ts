@@ -1,10 +1,11 @@
 import  { Router } from 'express';
 import { createPlaylist, deletePlaylist, getPlaylistsByRoom,getMusicByPlaylist,addMusicToPlaylist, removeMusicFromPlaylist, getPlaylistById } from './playlist.controller';
-
+import { verifySessionMiddleware } from '../../middleware/verify.sesion.middleware';
 
 
 const PlaylistRouter = Router();
 
+PlaylistRouter.use(verifySessionMiddleware);
 
 PlaylistRouter.post('/room/:roomId', createPlaylist);
 PlaylistRouter.get('/room/:roomId', getPlaylistsByRoom);
