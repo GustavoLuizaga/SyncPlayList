@@ -16,12 +16,18 @@ SyncPlayList es una plataforma web de reproducción musical colaborativa en tiem
 
 ## 🛠️ Tecnologías utilizadas
 
-- Node.js + TypeScript
-- Express.js
-- Prisma ORM (PostgreSQL)
-- Docker (para base de datos)
-- Socket.io (sincronización en tiempo real)
-- JWT y cookies para autenticación
+- **Node.js** y **TypeScript** — Backend moderno y tipado
+- **Express.js** — Framework para APIs REST
+- **Prisma ORM** — Acceso y migración de base de datos PostgreSQL
+- **PostgreSQL** — Base de datos relacional
+- **Docker** — Contenedores para la base de datos
+- **Socket.io** — Comunicación en tiempo real para sincronización musical
+- **JWT** y **cookies** — Autenticación y gestión de sesiones
+- **Firebase Admin SDK** — Almacenamiento de archivos y gestión de usuarios
+- **Multer** — Manejo de archivos en el backend
+- **Zod** — Validación de datos
+- **Nodemon** — Recarga automática en desarrollo
+- **Bcrypt** — Encriptación de contraseñas
 
 ## 🔑 Configuración de Firebase
 
@@ -39,11 +45,21 @@ Coloca el archivo en la siguiente ruta dentro del proyecto:
 
 Asegúrate de que la variable `FIREBASE_SERVICE_ACCOUNT_PATH` en tu `.env` apunte a esa ruta.
 
+## 📋 Prerrequisitos
+
+Antes de instalar y ejecutar SyncPlayList, asegúrate de tener lo siguiente:
+
+- **Node.js** (v18 o superior recomendado)
+- **npm** (v9 o superior recomendado)
+- **Docker** (para levantar la base de datos PostgreSQL local)
+- **Git** (para clonar el repositorio)
+- **Acceso al archivo de credenciales de Firebase** (descárgalo desde el enlace indicado en este README)
+
 ## ⚡ Instalación y ejecución
 
 1. **Clona el repositorio:**
    ```bash
-   git clone 
+   git clone [text](https://github.com/GustavoLuizaga/SyncPlayList.git)
    cd SyncPlayList
    ```
 
@@ -82,21 +98,39 @@ Asegúrate de que la variable `FIREBASE_SERVICE_ACCOUNT_PATH` en tu `.env` apunt
    El servidor REST API estará corriendo en `http://localhost:3000`.
    El servidor SocketIo estará en `http://localhost:3001`
 
-## 📚 Endpoints principales
+## 🚀 Prisma Client y archivos generados
 
-- `/auth` - Registro, login y gestión de sesión
-- `/sync-room` - Crear y gestionar salas colaborativas
-- `/playlist` - Crear playlists, añadir/eliminar música
-- `/music` - CRUD de música, búsqueda y favoritos
-- `/health` - Endpoint de salud del sistema
+Para que el proyecto funcione correctamente, debes generar el cliente de Prisma y los archivos generados:
 
-## 👤 Roles y permisos
+1. **Generar el cliente Prisma:**
+   ```bash
+   npx prisma generate
+   ```
+   Esto creará el cliente en la carpeta `src/generated/prisma`.
 
-- **Usuario:** Puede unirse a salas, escuchar música, añadir canciones y marcar favoritas.
-- **Administrador:** Puede gestionar toda la música del sistema y administrar roles.
+2. **Ejecutar migraciones:**
+   ```bash
+   npx prisma migrate dev
+   ```
+   Esto aplicará las migraciones y mantendrá tu base de datos actualizada.
 
-## 📝 Notas
+## 📦 Comandos npm disponibles
 
-- El proyecto está pensado para usarse junto a un frontend web (no incluido aquí).
-- Requiere tener Docker instalado para la base de datos.
-- Puedes personalizar los seeders en la carpeta `prisma/seeders` para cargar datos iniciales.
+Lista de comandos útiles que puedes ejecutar desde la raíz del proyecto:
+
+- `npm run start:dev` — Inicia el servidor en modo desarrollo con nodemon
+- `npm run start` — Inicia el servidor en modo producción (usa el build de TypeScript)
+- `npm run build` — Compila el proyecto TypeScript a JavaScript en la carpeta `dist`
+- `npm run prisma:migrate` — Ejecuta las migraciones de Prisma
+- `npm run prisma:generate` — Genera el cliente Prisma
+- `npm run prisma:studio` — Abre Prisma Studio para gestionar la base de datos
+- `npm run prisma:reset` — Resetea la base de datos y aplica todas las migraciones
+- `npm run prisma:seed` — Ejecuta el script de seed para poblar la base de datos
+
+## 🧪 Colección de Postman
+
+Para facilitar las pruebas de la API, puedes descargar la colección de Postman con todos los endpoints listos para usar:
+
+[Descargar colección de Postman](https://drive.google.com/file/d/10YHCs3H2Urog6kpbQoCAd_6TM808MXjr/view?usp=sharing)
+
+Importa el archivo en Postman y configura las variables de entorno según tu `.env`.
