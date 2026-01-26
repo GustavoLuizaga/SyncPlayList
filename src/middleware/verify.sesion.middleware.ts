@@ -10,9 +10,9 @@ declare global {
 }
 
 export const verifySessionMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.token;
+    const accessToken = req.cookies.accessToken;
 
-    if (!token) {
+    if (!accessToken) {
         return res.status(401).json({
             message: 'unauthorized: No token provided', 
             status: 401,
@@ -20,17 +20,16 @@ export const verifySessionMiddleware = (req: Request, res: Response, next: NextF
         });
     }   
 
-    const decoded = decodedToken(token);
+    try {
+        const decoded = decodedToken(accessToken);
+        req.session = decoded;
 
-    if (!decoded) {
-        return res.status(401).json({
+    } catch (error) {
+            return res.status(401).json({
             message: 'unauthorized: Invalid token',
             status: 401,
             ok: false
         });
     }
-
-    req.session = decoded;
-    
     next();
 };

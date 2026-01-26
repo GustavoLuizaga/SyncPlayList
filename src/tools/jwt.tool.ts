@@ -10,7 +10,7 @@ export interface IAuthPayload {
 }
 
 export function generateAccessToken(payload: IAuthPayload) {
-  const token = jwt.sign(
+  const accessToken = jwt.sign(
     payload,
     ENV.JWT_SECRET,
     {
@@ -18,14 +18,21 @@ export function generateAccessToken(payload: IAuthPayload) {
       algorithm: 'HS256'
     }
   )
+  return accessToken;
+};
 
-  return token;
+export function generateRefreshToken(payload: IAuthPayload) {
+  const refreshToken = jwt.sign(
+    payload,
+    ENV.JWT_SECRET,
+    {
+      expiresIn: '7d',
+      algorithm: 'HS256'
+    }
+  )
+  return refreshToken;
 };
 
 export function decodedToken(token: string) {
-  try {
-    return jwt.verify(token, ENV.JWT_SECRET) as IAuthPayload;
-  } catch (error) {
-    return null;
-  }
+  return jwt.verify(token, ENV.JWT_SECRET) as IAuthPayload;
 };

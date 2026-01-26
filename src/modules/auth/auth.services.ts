@@ -1,13 +1,14 @@
 import { IUser } from '../user/interface/user.interface';
 import { IServiceResponse } from '../../types/service.response.interface';
-import { securePass, validatePassHash} from '../../tools/crypto.tool';
+import { securePass, validatePassHash } from '../../tools/crypto.tool';
 import prisma from '../../config/prisma.client';
 import { IRegisterDto } from './dto/Register.dto';
 import { ILoginDto } from './dto/Login.dto';
 import { IAuthResponse } from './interface/auth.response.interface';
-import { generateAccessToken }  from '../../tools/jwt.tool';
+import { generateAccessToken, generateRefreshToken, decodedToken } from '../../tools/jwt.tool';
+import { de } from 'zod/v4/locales';
 
-export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResponse<IAuthResponse>> => {
+export const registerUser = async (payload: IRegisterDto): Promise<IServiceResponse<IAuthResponse>> => {
     try {
 
         const existingUser = await prisma.user.findUnique({
@@ -19,7 +20,7 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
                 ok: false,
                 message: "Email already in use"
             };
-        }   
+        }
 
         const passHash = await securePass(payload.password);
 
@@ -65,7 +66,14 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
 
         //Auto login after register
 
-        const token = generateAccessToken({
+        const accessToken = generateAccessToken({
+            user_id: newUser.user_id,
+            name: newUser.username,
+            email: newUser.email,
+            user_name: newUser.username
+        });
+
+        const refreshToken = generateRefreshToken({
             user_id: newUser.user_id,
             name: newUser.username,
             email: newUser.email,
@@ -77,7 +85,8 @@ export const registerUser = async (payload: IRegisterDto ): Promise<IServiceResp
             email: newUser.email,
             username: newUser.username,
             role: newUser.userRoles.map(userRol => userRol.role.role_name),
-            token: token
+            accessToken: accessToken,
+            refreshToken: refreshToken
         };
 
         return {
@@ -121,7 +130,15 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IA
                 message: "Invalid password"
             };
         }
-        const token = generateAccessToken({
+
+        const accessToken = generateAccessToken({
+            user_id: user.user_id,
+            name: user.username,
+            email: user.email,
+            user_name: user.username
+        });
+
+        const refreshToken = generateRefreshToken({
             user_id: user.user_id,
             name: user.username,
             email: user.email,
@@ -133,7 +150,8 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IA
             email: user.email,
             username: user.username,
             role: user.userRoles.map(userRol => userRol.role.role_name),
-            token: token
+            accessToken: accessToken,
+            refreshToken: refreshToken
         };
 
         return {
@@ -148,3 +166,13 @@ export const loginUser = async (payload: ILoginDto): Promise<IServiceResponse<IA
         };
     }
 };
+
+export const refreshAccessToken = async (refreshToken: string) =>{
+    const decodedRefreshToken = decodedToken(refreshToken);
+    return generateAccessToken({
+        user_id: decodedRefreshToken.user_id,
+        name: decodedRefreshToken.name,
+        email: decodedRefreshToken.email,
+        user_name: decodedRefreshToken.user_name
+    });
+}
