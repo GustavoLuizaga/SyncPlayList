@@ -5,6 +5,9 @@ dotenv.config();
 const ENV = {
     PORT: process.env.PORT || 3000,
     NODE_ENV: process.env.NODE_ENV || 'development',
+
+    MAX_FILE_IMAGE_SIZE_MB: process.env.MAX_FILE_IMAGE_SIZE_MB || '5',
+    MAX_FILE_AUDIO_SIZE_MB: process.env.MAX_FILE_AUDIO_SIZE_MB || '20',
     
     // Database
     DATABASE_URL: process.env.DATABASE_URL || '',

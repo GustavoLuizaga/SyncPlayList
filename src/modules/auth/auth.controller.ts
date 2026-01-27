@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { registerUser, loginUser, refreshAccessToken } from './auth.services';
-import { signupSchema } from './schemas/signup.schema';
-import { tr } from 'zod/v4/locales';
+
 
 export const signUp = async (req: Request, res: Response) => {
   //TODO: Create midleware for validation
@@ -38,17 +37,20 @@ export const login = async (req: Request, res: Response) => {
 };
 
 
-export const logout = (req: Request, res: Response) => {
-  return res.clearCookie('accessToken').status(200).json({
+export const logout = (_req: Request, res: Response) => {
+  res.clearCookie('refreshToken');
+  res.clearCookie('accessToken');
+
+  return res.status(200).json({
     message: 'Logout successful',
     status: 200,
     ok: true,
   });
 };
 
-export const refreshToken = async(req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) {
+export const refreshToken = async (req: Request, res: Response) => {
+  const refreshTokenValue = req.cookies.refreshToken;
+  if (!refreshTokenValue) {
     return res.status(401).json({
       message: 'No refresh token provided',
       status: 401,
@@ -57,7 +59,7 @@ export const refreshToken = async(req: Request, res: Response) => {
   }
 
   try {
-    const newAccessToken = await refreshAccessToken(refreshToken);
+    const newAccessToken = await refreshAccessToken(refreshTokenValue);
     res.cookie('accessToken', newAccessToken, { httpOnly: true });
     return res.status(200).json({
       message: 'Access token refreshed successfully',

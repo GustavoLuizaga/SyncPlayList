@@ -1,4 +1,3 @@
-import { IUser } from '../user/interface/user.interface';
 import { IServiceResponse } from '../../types/service.response.interface';
 import { securePass, validatePassHash } from '../../tools/crypto.tool';
 import prisma from '../../config/prisma.client';
@@ -6,7 +5,6 @@ import { IRegisterDto } from './dto/Register.dto';
 import { ILoginDto } from './dto/Login.dto';
 import { IAuthResponse } from './interface/auth.response.interface';
 import { generateAccessToken, generateRefreshToken, decodedToken } from '../../tools/jwt.tool';
-import { de } from 'zod/v4/locales';
 
 export const registerUser = async (payload: IRegisterDto): Promise<IServiceResponse<IAuthResponse>> => {
     try {
