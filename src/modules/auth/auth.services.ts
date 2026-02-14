@@ -10,7 +10,7 @@ export const registerUser = async (payload: IRegisterDto): Promise<IServiceRespo
     try {
         const existingUser = await verifyEmailInUse(payload.email);
 
-        if (existingUser.ok) {
+        if (!existingUser.ok) {
             return {
                 ok: false,
                 message: existingUser.message
