@@ -4,4 +4,5 @@ export interface IMusicQueryParams {
     artist?: string;
     sortBy?: "title" | "artist" | "duration" | "createdAt";
     sortOrder?: "asc" | "desc";
+    days?: number;
 }

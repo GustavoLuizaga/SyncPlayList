@@ -10,7 +10,7 @@ import { IMusicQueryParams } from "./dtos/music.query,params.dto";
 export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<IServiceResponse<IMusic[]>> => {
     try {
 
-        const { title, artist, sortBy, sortOrder } = queryParams;
+        const { title, artist, sortBy, sortOrder, days } = queryParams;
 
         const whereFilters: any = {};
 
@@ -28,6 +28,14 @@ export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<ISer
             };
         }
 
+        if (days){
+            const dateThreshold = new Date();
+            dateThreshold.setDate(dateThreshold.getDate() - days);
+            whereFilters.addedAt = {
+                gte: dateThreshold
+            };
+        }
+
         const orderBy: any = {};
         if (sortBy) {
             orderBy[sortBy] = sortOrder === 'desc' ? 'desc' : 'asc';
@@ -35,11 +43,10 @@ export const findAllMusic = async (queryParams: IMusicQueryParams): Promise<ISer
             orderBy['addedAt'] = 'desc';
         }
 
-        console.log("Query where filters:", whereFilters, "orderBy:", orderBy);
-
         const musicListResult = await prisma.music.findMany({
             where: {
-                ...whereFilters
+                ...whereFilters,
+                
             },
             orderBy: {
                 ...orderBy
