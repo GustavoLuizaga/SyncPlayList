@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer components {
+  .text-subtitle-gradient-hero {
+    @apply font-bold text-transparent text-2xl md:text-3xl lg:text-4xl bg-clip-text bg-linear-to-br from-white to-white/50 tracking-tight mb-6;
+  }
+  
+  .text-gradient-teal {
+    @apply text-transparent bg-clip-text bg-linear-to-r from-[#1bc6b7] to-[#0D9488];
+  }
+}
+
+
+.button-wrapper::before {
+  animation: spin-gradient 4s linear infinite;
+}
+
+@keyframes spin-gradient {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

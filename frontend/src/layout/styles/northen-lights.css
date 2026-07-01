@@ -1,0 +1,70 @@
+/* src/styles/northen-lights.css */
+:root {
+  --hue: 190;
+  --hue-1: 195;     /* Azul celeste */
+  --hue-2: 175;     /* Turquesa */
+  --hue-3: 185;     /* Cian/Aguamarina */
+  --alpha-1: 0.5;
+  --alpha-2: 0.9;
+  --alpha-3: 0.6;
+}
+
+.scene {
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #18181b;
+}
+
+.northen-lights {
+  width: 200vmax;
+  height: 100vmax;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-20%, -55%) rotate(30deg);
+  display: flex;
+  filter: blur(75px);
+}
+
+.northen-light {
+  flex: 1;
+  --color-one: hsla(var(--hue-1), 100%, 50%, var(--alpha-1));
+  --color-two: hsla(var(--hue-2), 100%, 50%, var(--alpha-2));
+  --color-three: hsla(var(--hue-3), 100%, 50%, var(--alpha-3));
+  --up: calc(var(--y, 10) * 2vmax);
+  --left: calc(var(--x, 2) * 2vmax);
+  background-image: linear-gradient(
+    0deg,
+    transparent,
+    var(--color-one) 10%,
+    transparent,
+    var(--color-two) 40%,
+    transparent,
+    var(--color-three) 60%
+  );
+  background-size: 100% 40vmax;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  transform: translate(var(--left), var(--up)) scale(1);
+  -webkit-animation: shift calc(var(--duration, 2) * 1s) calc(var(--delay, 0) * -1s) infinite ease;
+  animation: shift calc(var(--duration, 2) * 1s) calc(var(--delay, 0) * -1s) infinite ease;
+}
+
+@media (max-width: 768px) {
+  .northen-light {
+    --up: calc(var(--y, 10) * 2vmax);
+    --left: calc(var(--x, 2) * 2vmax);
+  }
+}
+
+@keyframes shift {
+  50% {
+    transform: translate(0, 0) scale(1);
+  }
+}
